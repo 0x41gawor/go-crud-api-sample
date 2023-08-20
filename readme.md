@@ -28,4 +28,17 @@ And at the end you can go with:
 make run
 ```
 
+# Database setup
+Na VMce uruchomiłem:
+```bash
+sudo docker run --name mysql-ejek -p 3306:3306 -e MYSQL_ROOT_PASSWORD=ejek -d mysql:latest
+```
+A potem na Win10 użyłem MySQL workbench</br>
+i tam dałem paramki na new connection
+```
+root@192.168.56.106:3306 pwd: ejek
+```
+
+no i krok po kroczku leciałem z `db_init.sql`
+
 
