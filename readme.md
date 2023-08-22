@@ -33,6 +33,8 @@ Na VMce uruchomiłem:
 ```bash
 sudo docker run --name mysql-ejek -p 3306:3306 -e MYSQL_ROOT_PASSWORD=ejek -d mysql:latest
 ```
+> dodalem na koniec `--mount source=my-sql-vol`
+> uprzednio tworzac volume wg. tego https://docs.docker.com/storage/volumes/ 
 A potem na Win10 użyłem MySQL workbench</br>
 i tam dałem paramki na new connection
 ```
