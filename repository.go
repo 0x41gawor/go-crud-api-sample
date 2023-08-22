@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -11,10 +12,11 @@ type DTO interface {
 }
 
 type Repository interface {
+	// niech create zwraca id stworzonego elementu, a nie caly element, od tego masz read: atomowosc operacji ;)
 	Create(model *DTO) (int64, error)
-	Read(int) (*DTO, error)
+	Read(int64) (*DTO, error)
 	Update(model *DTO) error
-	Delete(int) error
+	Delete(int64) error
 	List() ([]*DTO, error)
 }
 
@@ -24,6 +26,7 @@ type ContinentRepository struct {
 
 func NewContinentRepository() (*ContinentRepository, error) {
 	db, err := sql.Open("mysql", "root:ejek@tcp(127.0.0.1:3306)/go_crud_api_sample_db")
+
 	if err != nil {
 		return nil, err
 	}
@@ -82,4 +85,31 @@ func (this *ContinentRepository) Create(model *Continent) (int64, error) {
 	}
 
 	return lastId, nil
+}
+
+func (this *ContinentRepository) Read(id int64) (*Continent, error) {
+	query := fmt.Sprintf(
+		"select * from continents where id =%d",
+		id,
+	)
+	res, err := this.db.Query(query)
+	defer res.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	model := new(Continent)
+
+	if res.Next() {
+		err = res.Scan(&model.id, &model.name, &model.population, &model.gdp, &model.gdpPerCapita)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+
+		return nil, errors.New("No item with given id")
+	}
+
+	return model, nil
 }

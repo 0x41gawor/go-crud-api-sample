@@ -8,16 +8,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	europe := NewContinent("dgdf", 23, 23, 23)
-
-	id, err := continentRepository.Create(europe)
-
-	fmt.Printf("Inserted id: %d \n", id)
-
-	if err != nil {
-		panic(err)
-	}
-	item, err := continentRepository.List()
+	item, err := continentRepository.Read(5)
 	fmt.Println(item)
+	fmt.Println(err)
 }
