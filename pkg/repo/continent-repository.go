@@ -1,24 +1,14 @@
-package main
+package repo
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 
+	"github.com/0x41gawor/go-crud-api-sample/pkg/types"
+
 	_ "github.com/go-sql-driver/mysql"
 )
-
-type DTO interface {
-}
-
-type Repository interface {
-	// niech create zwraca id stworzonego elementu, a nie caly element, od tego masz read: atomowosc operacji ;)
-	Create(model *DTO) (int64, error)
-	Read(id int64) (*DTO, error)
-	Update(id int64, model *DTO) error
-	Delete(id int64) error
-	List() ([]*DTO, error)
-}
 
 type ContinentRepository struct {
 	db *sql.DB
@@ -38,22 +28,22 @@ func NewContinentRepository() (*ContinentRepository, error) {
 	}, nil
 }
 
-func (this *ContinentRepository) List() ([]*Continent, error) {
+func (this *ContinentRepository) List() ([]*types.Continent, error) {
 	rows, err := this.db.Query("SELECT * FROM continents")
 	if err != nil {
 		return nil, err
 	}
 
-	continents := []*Continent{}
+	continents := []*types.Continent{}
 
 	for rows.Next() {
-		temp := new(Continent)
+		temp := new(types.Continent)
 		err := rows.Scan(
-			&temp.id,
-			&temp.name,
-			&temp.population,
-			&temp.gdp,
-			&temp.gdpPerCapita,
+			&temp.Id,
+			&temp.Name,
+			&temp.Population,
+			&temp.Gdp,
+			&temp.GdpPerCapita,
 		)
 		if err != nil {
 			return nil, err
@@ -64,13 +54,13 @@ func (this *ContinentRepository) List() ([]*Continent, error) {
 	return continents, nil
 }
 
-func (this *ContinentRepository) Create(model *Continent) (int64, error) {
+func (this *ContinentRepository) Create(model *types.Continent) (int64, error) {
 	query := fmt.Sprintf(
 		"INSERT INTO continents(name, population, gdp, gdp_per_capita) VALUES ('%s', %f, %f, %f);",
-		model.name,
-		model.population,
-		model.gdp,
-		model.gdpPerCapita,
+		model.Name,
+		model.Population,
+		model.Gdp,
+		model.GdpPerCapita,
 	)
 
 	res, err := this.db.Exec(query)
@@ -87,7 +77,7 @@ func (this *ContinentRepository) Create(model *Continent) (int64, error) {
 	return lastId, nil
 }
 
-func (this *ContinentRepository) Read(id int64) (*Continent, error) {
+func (this *ContinentRepository) Read(id int64) (*types.Continent, error) {
 	query := fmt.Sprintf(
 		"SELECT * FROM continents WHERE id =%d",
 		id,
@@ -99,10 +89,10 @@ func (this *ContinentRepository) Read(id int64) (*Continent, error) {
 		return nil, err
 	}
 
-	model := new(Continent)
+	model := new(types.Continent)
 
 	if res.Next() {
-		err = res.Scan(&model.id, &model.name, &model.population, &model.gdp, &model.gdpPerCapita)
+		err = res.Scan(&model.Id, &model.Name, &model.Population, &model.Gdp, &model.GdpPerCapita)
 		if err != nil {
 			return nil, err
 		}
@@ -113,7 +103,7 @@ func (this *ContinentRepository) Read(id int64) (*Continent, error) {
 	return model, nil
 }
 
-func (this *ContinentRepository) Update(id int64, model *Continent) error {
+func (this *ContinentRepository) Update(id int64, model *types.Continent) error {
 	query := fmt.Sprintf(
 		`UPDATE continents 
 		SET 
@@ -123,10 +113,10 @@ func (this *ContinentRepository) Update(id int64, model *Continent) error {
 			gdp_per_capita = %f
 		WHERE
 		id = %d`,
-		model.name,
-		model.population,
-		model.gdp,
-		model.gdpPerCapita,
+		model.Name,
+		model.Population,
+		model.Gdp,
+		model.GdpPerCapita,
 		id,
 	)
 
