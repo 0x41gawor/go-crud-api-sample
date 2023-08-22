@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -10,9 +11,9 @@ type DTO interface {
 }
 
 type Repository interface {
-	Create(*DTO) error
+	Create(model *DTO) (int64, error)
 	Read(int) (*DTO, error)
-	Update(*DTO) error
+	Update(model *DTO) error
 	Delete(int) error
 	List() ([]*DTO, error)
 }
@@ -34,8 +35,8 @@ func NewContinentRepository() (*ContinentRepository, error) {
 	}, nil
 }
 
-func (r *ContinentRepository) List() ([]*Continent, error) {
-	rows, err := r.db.Query("select * from continents")
+func (this *ContinentRepository) List() ([]*Continent, error) {
+	rows, err := this.db.Query("select * from continents")
 	if err != nil {
 		return nil, err
 	}
@@ -58,4 +59,27 @@ func (r *ContinentRepository) List() ([]*Continent, error) {
 	}
 
 	return continents, nil
+}
+
+func (this *ContinentRepository) Create(model *Continent) (int64, error) {
+	query := fmt.Sprintf(
+		"INSERT INTO continents(name, population, gdp, gdp_per_capita) VALUES ('%s', %f, %f, %f);",
+		model.name,
+		model.population,
+		model.gdp,
+		model.gdpPerCapita,
+	)
+
+	res, err := this.db.Exec(query)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return lastId, nil
 }

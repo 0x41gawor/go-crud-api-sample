@@ -3,12 +3,21 @@ package main
 import "fmt"
 
 func main() {
-	elo, err := NewContinentRepository()
+	continentRepository, err := NewContinentRepository()
+
 	if err != nil {
 		panic(err)
 	}
-	item, err := elo.List()
-	fmt.Println(item[0])
-	polska := NewCountry("Poland", 1, 23, 23.3, 23, []string{"Warsaw", "Cracow", "fSf", "fsd", "fs"})
-	fmt.Println(polska)
+
+	europe := NewContinent("dgdf", 23, 23, 23)
+
+	id, err := continentRepository.Create(europe)
+
+	fmt.Printf("Inserted id: %d \n", id)
+
+	if err != nil {
+		panic(err)
+	}
+	item, err := continentRepository.List()
+	fmt.Println(item)
 }
