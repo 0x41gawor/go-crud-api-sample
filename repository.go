@@ -39,7 +39,7 @@ func NewContinentRepository() (*ContinentRepository, error) {
 }
 
 func (this *ContinentRepository) List() ([]*Continent, error) {
-	rows, err := this.db.Query("select * from continents")
+	rows, err := this.db.Query("SELECT * FROM continents")
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (this *ContinentRepository) Create(model *Continent) (int64, error) {
 
 func (this *ContinentRepository) Read(id int64) (*Continent, error) {
 	query := fmt.Sprintf(
-		"select * from continents where id =%d",
+		"SELECT * FROM continents WHERE id =%d",
 		id,
 	)
 	res, err := this.db.Query(query)
@@ -107,7 +107,6 @@ func (this *ContinentRepository) Read(id int64) (*Continent, error) {
 			return nil, err
 		}
 	} else {
-
 		return nil, errors.New("No item with given id")
 	}
 
@@ -137,5 +136,14 @@ func (this *ContinentRepository) Update(id int64, model *Continent) error {
 		return err
 	}
 
+	return nil
+}
+
+func (this *ContinentRepository) Delete(id int64) error {
+	query := fmt.Sprintf("DELETE FROM continents WHERE id = %d", id)
+	_, err := this.db.Exec(query)
+	if err != nil {
+		return err
+	}
 	return nil
 }
