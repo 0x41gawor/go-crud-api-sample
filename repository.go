@@ -14,9 +14,9 @@ type DTO interface {
 type Repository interface {
 	// niech create zwraca id stworzonego elementu, a nie caly element, od tego masz read: atomowosc operacji ;)
 	Create(model *DTO) (int64, error)
-	Read(int64) (*DTO, error)
-	Update(model *DTO) error
-	Delete(int64) error
+	Read(id int64) (*DTO, error)
+	Update(id int64, model *DTO) error
+	Delete(id int64) error
 	List() ([]*DTO, error)
 }
 
@@ -112,4 +112,30 @@ func (this *ContinentRepository) Read(id int64) (*Continent, error) {
 	}
 
 	return model, nil
+}
+
+func (this *ContinentRepository) Update(id int64, model *Continent) error {
+	query := fmt.Sprintf(
+		`UPDATE continents 
+		SET 
+			name = '%s',
+			population = %f,
+			gdp = %f,
+			gdp_per_capita = %f
+		WHERE
+		id = %d`,
+		model.name,
+		model.population,
+		model.gdp,
+		model.gdpPerCapita,
+		id,
+	)
+
+	_, err := this.db.Exec(query)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
