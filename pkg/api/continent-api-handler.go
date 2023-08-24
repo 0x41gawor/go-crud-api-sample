@@ -28,7 +28,7 @@ func (this *ContinentApiHandler) handleContinent(w http.ResponseWriter, r *http.
 		return this.create(w, r)
 	}
 
-	return WriteJSON(w, http.StatusOK, "res: method not allowed")
+	return WriteJSON(w, http.StatusOK, "error: method not allowed")
 }
 
 // handles "/continent/{id}" endpoint
@@ -41,13 +41,13 @@ func (this *ContinentApiHandler) handleContinentId(w http.ResponseWriter, r *htt
 		return this.delete(w, r)
 	}
 
-	return WriteJSON(w, http.StatusOK, "res: method not allowed")
+	return WriteJSON(w, http.StatusOK, "error: method not allowed")
 }
 
 func (this *ContinentApiHandler) list(w http.ResponseWriter, r *http.Request) error {
 	res, err := this.repo.List()
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 	return WriteJSON(w, http.StatusOK, res)
 }
@@ -57,14 +57,12 @@ func (this *ContinentApiHandler) create(w http.ResponseWriter, r *http.Request) 
 
 	err := json.NewDecoder(r.Body).Decode(model)
 	if err != nil {
-		fmt.Println(err.Error())
-		return err
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
 	id, err := this.repo.Create(model)
 	if err != nil {
-		fmt.Println(err.Error())
-		return err
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
 	return WriteJSON(w, http.StatusOK, fmt.Sprintf("createdId: %d", id))
