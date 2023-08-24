@@ -8,6 +8,6 @@ type Repository interface {
 	Create(model *DTO) (int64, error)
 	Read(id int64) (*DTO, error)
 	Update(id int64, model *DTO) error
-	Delete(id int64) error
+	Delete(id int64) (bool, error)
 	List() ([]*DTO, error)
 }

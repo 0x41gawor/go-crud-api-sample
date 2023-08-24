@@ -37,6 +37,9 @@ func (this *ContinentApiHandler) handleContinentId(w http.ResponseWriter, r *htt
 	if r.Method == "GET" {
 		return this.read(w, r)
 	}
+	if r.Method == "PUT" {
+		return this.update(w, r)
+	}
 	if r.Method == "DELETE" {
 		return this.delete(w, r)
 	}
@@ -84,9 +87,44 @@ func (this *ContinentApiHandler) read(w http.ResponseWriter, r *http.Request) er
 }
 
 func (this *ContinentApiHandler) update(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	model := new(model.Continent)
+
+	err := json.NewDecoder(r.Body).Decode(model)
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	id, err := getID(r)
+
+	model.Id = id
+
+	err = this.repo.Update(int64(id), model)
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	updatedModel, err := this.repo.Read(int64(id))
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	return WriteJSON(w, http.StatusOK, updatedModel)
 }
 
 func (this *ContinentApiHandler) delete(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	id, err := getID(r)
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	res, err := this.repo.Delete(int64(id))
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	if res == false {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("res: no item deleted "))
+	}
+
+	return WriteJSON(w, http.StatusOK, fmt.Sprintf("res: item with %d deleted ", id))
 }

@@ -129,11 +129,24 @@ func (this *ContinentRepository) Update(id int64, m *model.Continent) error {
 	return nil
 }
 
-func (this *ContinentRepository) Delete(id int64) error {
+func (this *ContinentRepository) Delete(id int64) (bool, error) {
 	query := fmt.Sprintf("DELETE FROM continents WHERE id = %d", id)
-	_, err := this.db.Exec(query)
+	res, err := this.db.Exec(query)
 	if err != nil {
-		return err
+		return false, err
 	}
-	return nil
+
+	affectedRows, err := res.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	var result bool
+	if affectedRows != 0 {
+		result = true
+	} else {
+		result = false
+	}
+
+	return result, nil
 }
