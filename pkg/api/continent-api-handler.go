@@ -1,10 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
-	"go/types"
 	"net/http"
 
+	"github.com/0x41gawor/go-crud-api-sample/pkg/model"
 	"github.com/0x41gawor/go-crud-api-sample/pkg/repo"
 )
 
@@ -32,7 +33,15 @@ func (this *ContinentApiHandler) handleContinent(w http.ResponseWriter, r *http.
 
 // handles "/continent/{id}" endpoint
 func (this *ContinentApiHandler) handleContinentId(w http.ResponseWriter, r *http.Request) error {
-	return nil
+
+	if r.Method == "GET" {
+		return this.read(w, r)
+	}
+	if r.Method == "DELETE" {
+		return this.delete(w, r)
+	}
+
+	return WriteJSON(w, http.StatusOK, "res: method not allowed")
 }
 
 func (this *ContinentApiHandler) list(w http.ResponseWriter, r *http.Request) error {
@@ -44,13 +53,36 @@ func (this *ContinentApiHandler) list(w http.ResponseWriter, r *http.Request) er
 }
 
 func (this *ContinentApiHandler) create(w http.ResponseWriter, r *http.Request) error {
-	model := new()
+	model := new(model.Continent)
 
-	return nil
+	err := json.NewDecoder(r.Body).Decode(model)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	id, err := this.repo.Create(model)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, fmt.Sprintf("createdId: %d", id))
 }
 
 func (this *ContinentApiHandler) read(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	id, err := getID(r)
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	model, err := this.repo.Read(int64(id))
+
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	return WriteJSON(w, http.StatusOK, model)
 }
 
 func (this *ContinentApiHandler) update(w http.ResponseWriter, r *http.Request) error {
