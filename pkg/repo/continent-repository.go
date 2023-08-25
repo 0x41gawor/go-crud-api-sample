@@ -21,16 +21,16 @@ func NewContinentRepository(db *sql.DB) *ContinentRepository {
 }
 
 func (this *ContinentRepository) List() ([]*model.Continent, error) {
-	rows, err := this.db.Query("SELECT * FROM continents")
+	res, err := this.db.Query("SELECT * FROM continents")
 	if err != nil {
 		return nil, err
 	}
 
 	models := []*model.Continent{}
 
-	for rows.Next() {
+	for res.Next() {
 		temp := new(model.Continent)
-		err := rows.Scan(
+		err := res.Scan(
 			&temp.Id,
 			&temp.Name,
 			&temp.Population,
