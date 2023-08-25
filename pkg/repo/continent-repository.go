@@ -14,18 +14,10 @@ type ContinentRepository struct {
 	db *sql.DB
 }
 
-func NewContinentRepository() (*ContinentRepository, error) {
-	db, err := sql.Open("mysql", "root:ejek@tcp(127.0.0.1:3306)/go_crud_api_sample_db")
-
-	if err != nil {
-		return nil, err
-	}
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
+func NewContinentRepository(db *sql.DB) *ContinentRepository {
 	return &ContinentRepository{
 		db: db,
-	}, nil
+	}
 }
 
 func (this *ContinentRepository) List() ([]*model.Continent, error) {
@@ -34,7 +26,7 @@ func (this *ContinentRepository) List() ([]*model.Continent, error) {
 		return nil, err
 	}
 
-	continents := []*model.Continent{}
+	models := []*model.Continent{}
 
 	for rows.Next() {
 		temp := new(model.Continent)
@@ -48,10 +40,10 @@ func (this *ContinentRepository) List() ([]*model.Continent, error) {
 		if err != nil {
 			return nil, err
 		}
-		continents = append(continents, temp)
+		models = append(models, temp)
 	}
 
-	return continents, nil
+	return models, nil
 }
 
 func (this *ContinentRepository) Create(m *model.Continent) (int64, error) {

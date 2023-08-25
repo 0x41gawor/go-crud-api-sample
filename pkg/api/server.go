@@ -22,10 +22,11 @@ func NewServer(listenAddr string) *Server {
 func (this *Server) Run() {
 	router := mux.NewRouter()
 
-	continentRepository, err := repo.NewContinentRepository()
+	dbConnectionHelper, err := repo.NewDatabaseConnectionHelper()
 	if err != nil {
 		fmt.Print(err.Error())
 	}
+	continentRepository := repo.NewContinentRepository(dbConnectionHelper.DB)
 	continentApiHandler := NewContinentApiHandler(*continentRepository)
 
 	router.HandleFunc("/continent", makeHTTPHandleFunc(continentApiHandler.handleContinent))
