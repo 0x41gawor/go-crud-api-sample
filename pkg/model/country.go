@@ -3,13 +3,13 @@ package model
 import "fmt"
 
 type Country struct {
-	Id           int
-	Name         string
-	ContinentId  int
-	Population   float32
-	Gdp          float32
-	GdpPerCapita float32
-	Top5Cities   []string
+	Id           int      `json:"id"`
+	Name         string   `json:"name"`
+	ContinentId  int      `json:"continent_id"`
+	Population   float32  `json:"population"`
+	Gdp          float32  `json:"gdp"`
+	GdpPerCapita float32  `json:"gdp_per_capita"`
+	Top5Cities   []string `json:"top_5_cities"`
 }
 
 func NewCountry(name string, continentId int, population, gdp, gdpPerCapita float32, top5Cities []string) *Country {

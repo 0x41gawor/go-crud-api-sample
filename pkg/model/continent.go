@@ -3,11 +3,11 @@ package model
 import "fmt"
 
 type Continent struct {
-	Id           int
-	Name         string
-	Population   float32
-	Gdp          float32
-	GdpPerCapita float32
+	Id           int     `json:"id"`
+	Name         string  `json:"name"`
+	Population   float32 `json:"population"`
+	Gdp          float32 `json:"gdp"`
+	GdpPerCapita float32 `json:"gdp_per_capita"`
 }
 
 func NewContinent(name string, population, gdp, gdpPerCapita float32) *Continent {
