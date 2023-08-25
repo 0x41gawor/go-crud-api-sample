@@ -21,30 +21,28 @@ func NewContinentApiHandler(repo repo.ContinentRepository) *ContinentApiHandler 
 
 // handles "/continent" endpoint
 func (this *ContinentApiHandler) handleContinent(w http.ResponseWriter, r *http.Request) error {
-	if r.Method == "GET" {
+	switch r.Method {
+	case "GET":
 		return this.list(w, r)
-	}
-	if r.Method == "POST" {
+	case "POST":
 		return this.create(w, r)
+	default:
+		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
-
-	return WriteJSON(w, http.StatusOK, "error: method not allowed")
 }
 
 // handles "/continent/{id}" endpoint
 func (this *ContinentApiHandler) handleContinentId(w http.ResponseWriter, r *http.Request) error {
-
-	if r.Method == "GET" {
+	switch r.Method {
+	case "GET":
 		return this.read(w, r)
-	}
-	if r.Method == "PUT" {
+	case "PUT":
 		return this.update(w, r)
-	}
-	if r.Method == "DELETE" {
+	case "DELETE":
 		return this.delete(w, r)
+	default:
+		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
-
-	return WriteJSON(w, http.StatusOK, "error: method not allowed")
 }
 
 func (this *ContinentApiHandler) list(w http.ResponseWriter, r *http.Request) error {
