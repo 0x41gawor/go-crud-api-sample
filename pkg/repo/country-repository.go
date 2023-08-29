@@ -44,6 +44,7 @@ func (this *CountryRepository) List() ([]*model.Country, error) {
 			return nil, err
 		}
 		temp.Top5Cities = strings.Split(*top5CitiesStr, ",")
+		temp.Top5Cities = removeSpacesFromStringSlice(temp.Top5Cities)
 		models = append(models, temp)
 	}
 
@@ -106,6 +107,7 @@ func (this *CountryRepository) Read(id int64) (*model.Country, error) {
 			return nil, err
 		}
 		model.Top5Cities = strings.Split(*top5CitiesStr, ",")
+		model.Top5Cities = removeSpacesFromStringSlice(model.Top5Cities)
 	} else {
 		return nil, errors.New("No item with given id")
 	}
