@@ -31,6 +31,15 @@ func (this *CountryApiHandler) handleCountry(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+func (this *CountryApiHandler) handleCountryId(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case "GET":
+		return this.Read(w, r)
+	default:
+		return WriteJSON(w, http.StatusOK, "error: method not allowed")
+	}
+}
+
 func (this *CountryApiHandler) List(w http.ResponseWriter, r *http.Request) error {
 	res, err := this.repo.List()
 	if err != nil {
@@ -52,4 +61,19 @@ func (this *CountryApiHandler) Create(w http.ResponseWriter, r *http.Request) er
 	}
 
 	return WriteJSON(w, http.StatusOK, fmt.Sprintf("createdId: %d", id))
+}
+
+func (this *CountryApiHandler) Read(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	model, err := this.repo.Read(int64(id))
+
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	return WriteJSON(w, http.StatusOK, model)
 }

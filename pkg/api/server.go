@@ -38,6 +38,7 @@ func (this *Server) Run() {
 
 	router.HandleFunc("/country", makeHTTPHandleFunc(countryApiHandler.handleCountry))
 	router.HandleFunc("/country/", makeHTTPHandleFunc(countryApiHandler.handleCountry))
+	router.HandleFunc("/country/{id}", makeHTTPHandleFunc(countryApiHandler.handleCountryId))
 
 	log.Println("JSON API server running on port: ", this.listenPort)
 	http.ListenAndServe(this.listenPort, router)
