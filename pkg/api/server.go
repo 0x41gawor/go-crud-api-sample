@@ -29,9 +29,15 @@ func (this *Server) Run() {
 	continentRepository := repo.NewContinentRepository(dbConnectionHelper.DB)
 	continentApiHandler := NewContinentApiHandler(*continentRepository)
 
+	countryRepository := repo.NewCountryRepository(dbConnectionHelper.DB)
+	countryApiHandler := NewCountryApiHandler(*countryRepository)
+
 	router.HandleFunc("/continent", makeHTTPHandleFunc(continentApiHandler.handleContinent))
 	router.HandleFunc("/continent/", makeHTTPHandleFunc(continentApiHandler.handleContinent))
 	router.HandleFunc("/continent/{id}", makeHTTPHandleFunc(continentApiHandler.handleContinentId))
+
+	router.HandleFunc("/country", makeHTTPHandleFunc(countryApiHandler.handleCountry))
+	router.HandleFunc("/country/", makeHTTPHandleFunc(countryApiHandler.handleCountry))
 
 	log.Println("JSON API server running on port: ", this.listenPort)
 	http.ListenAndServe(this.listenPort, router)
