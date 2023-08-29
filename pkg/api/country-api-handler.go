@@ -23,9 +23,9 @@ func NewCountryApiHandler(repo repo.CountryRepository) *CountryApiHandler {
 func (this *CountryApiHandler) handleCountry(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		return this.List(w, r)
+		return this.list(w, r)
 	case "POST":
-		return this.Create(w, r)
+		return this.create(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
@@ -34,13 +34,13 @@ func (this *CountryApiHandler) handleCountry(w http.ResponseWriter, r *http.Requ
 func (this *CountryApiHandler) handleCountryId(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		return this.Read(w, r)
+		return this.read(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
 }
 
-func (this *CountryApiHandler) List(w http.ResponseWriter, r *http.Request) error {
+func (this *CountryApiHandler) list(w http.ResponseWriter, r *http.Request) error {
 	res, err := this.repo.List()
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (this *CountryApiHandler) List(w http.ResponseWriter, r *http.Request) erro
 	return WriteJSON(w, http.StatusOK, res)
 }
 
-func (this *CountryApiHandler) Create(w http.ResponseWriter, r *http.Request) error {
+func (this *CountryApiHandler) create(w http.ResponseWriter, r *http.Request) error {
 	model := new(model.Country)
 
 	err := json.NewDecoder(r.Body).Decode(model)
@@ -63,7 +63,7 @@ func (this *CountryApiHandler) Create(w http.ResponseWriter, r *http.Request) er
 	return WriteJSON(w, http.StatusOK, fmt.Sprintf("createdId: %d", id))
 }
 
-func (this *CountryApiHandler) Read(w http.ResponseWriter, r *http.Request) error {
+func (this *CountryApiHandler) read(w http.ResponseWriter, r *http.Request) error {
 	id, err := getID(r)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
