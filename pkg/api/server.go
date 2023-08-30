@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/0x41gawor/go-crud-api-sample/pkg/repo"
+	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
 )
 
@@ -40,8 +41,8 @@ func (this *Server) Run() {
 	router.HandleFunc("/login", makeHTTPHandleFunc(userApiHandler.handleLogin))
 	router.HandleFunc("/login/", makeHTTPHandleFunc(userApiHandler.handleLogin))
 
-	router.HandleFunc("/continent", makeHTTPHandleFunc(continentApiHandler.handleContinent))
-	router.HandleFunc("/continent/", makeHTTPHandleFunc(continentApiHandler.handleContinent))
+	router.HandleFunc("/continent", withJWTAuth(makeHTTPHandleFunc(continentApiHandler.handleContinent)))
+	router.HandleFunc("/continent/", withJWTAuth(makeHTTPHandleFunc(continentApiHandler.handleContinent)))
 	router.HandleFunc("/continent/{id}", makeHTTPHandleFunc(continentApiHandler.handleContinentId))
 
 	router.HandleFunc("/country", makeHTTPHandleFunc(countryApiHandler.handleCountry))
@@ -59,5 +60,29 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 		if err := f(w, r); err != nil {
 			// handle error here
 		}
+	}
+}
+
+// Decorates given function with JWT authorization
+func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("calling JWT auth middleware")
+
+		tokenStr := r.Header.Get("x-jwt-token")
+		token, err := ValidateJWT(tokenStr)
+
+		if err != nil {
+			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+			return
+		}
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			fmt.Println(claims["login"], claims["expiresAt"])
+		} else {
+			fmt.Println(err)
+		}
+
+		handlerFunc(w, r)
 	}
 }
