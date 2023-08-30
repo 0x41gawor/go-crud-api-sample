@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/0x41gawor/go-crud-api-sample/pkg/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -19,10 +21,17 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (this *UserRepository) Create(m *model.User) (int64, error) {
+
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(m.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return 0, err
+	}
+
 	query := fmt.Sprintf(
 		"INSERT INTO users(login, password) VALUES ('%s', '%s');",
 		m.Login,
-		m.Password,
+		string(encryptedPassword),
 	)
 
 	res, err := this.db.Exec(query)
@@ -32,6 +41,7 @@ func (this *UserRepository) Create(m *model.User) (int64, error) {
 	}
 
 	lastId, err := res.LastInsertId()
+
 	if err != nil {
 		return 0, err
 	}
