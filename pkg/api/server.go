@@ -32,6 +32,14 @@ func (this *Server) Run() {
 	countryRepository := repo.NewCountryRepository(dbConnectionHelper.DB)
 	countryApiHandler := NewCountryApiHandler(*countryRepository)
 
+	userRepository := repo.NewUserRepository(dbConnectionHelper.DB)
+	userApiHandler := NewUserApiHandler(*userRepository)
+
+	router.HandleFunc("/register", makeHTTPHandleFunc(userApiHandler.handleRegister))
+	router.HandleFunc("/register/", makeHTTPHandleFunc(userApiHandler.handleRegister))
+	router.HandleFunc("/login", makeHTTPHandleFunc(userApiHandler.handleLogin))
+	router.HandleFunc("/login/", makeHTTPHandleFunc(userApiHandler.handleLogin))
+
 	router.HandleFunc("/continent", makeHTTPHandleFunc(continentApiHandler.handleContinent))
 	router.HandleFunc("/continent/", makeHTTPHandleFunc(continentApiHandler.handleContinent))
 	router.HandleFunc("/continent/{id}", makeHTTPHandleFunc(continentApiHandler.handleContinentId))
