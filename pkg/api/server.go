@@ -44,11 +44,11 @@ func (this *Server) Run() {
 
 	router.HandleFunc("/continent", withJWTAuth(makeHTTPHandleFunc(continentApiHandler.handleContinent)))
 	router.HandleFunc("/continent/", withJWTAuth(makeHTTPHandleFunc(continentApiHandler.handleContinent)))
-	router.HandleFunc("/continent/{id}", makeHTTPHandleFunc(continentApiHandler.handleContinentId))
+	router.HandleFunc("/continent/{id}", withJWTAuth(makeHTTPHandleFunc(continentApiHandler.handleContinentId)))
 
-	router.HandleFunc("/country", makeHTTPHandleFunc(countryApiHandler.handleCountry))
-	router.HandleFunc("/country/", makeHTTPHandleFunc(countryApiHandler.handleCountry))
-	router.HandleFunc("/country/{id}", makeHTTPHandleFunc(countryApiHandler.handleCountryId))
+	router.HandleFunc("/country", withJWTAuth(makeHTTPHandleFunc(countryApiHandler.handleCountry)))
+	router.HandleFunc("/country/", withJWTAuth(makeHTTPHandleFunc(countryApiHandler.handleCountry)))
+	router.HandleFunc("/country/{id}", withJWTAuth(makeHTTPHandleFunc(countryApiHandler.handleCountryId)))
 
 	log.Println("JSON API server running on port: ", this.listenPort)
 	http.ListenAndServe(this.listenPort, router)
@@ -69,9 +69,6 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 // Decorates given function with JWT authorization
 func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		fmt.Println("calling JWT auth middleware")
-
 		tokenStr := r.Header.Get("x-jwt-token")
 
 		token, err := ValidateJWT(tokenStr)
@@ -90,7 +87,6 @@ func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 			return
 		}
-		fmt.Println(claims["login"], claims["expiresAt"])
 
 		expiresAtFloat := claims["expiresAt"].(float64)
 		expiresAtTime := time.Unix(int64(expiresAtFloat), 0)
