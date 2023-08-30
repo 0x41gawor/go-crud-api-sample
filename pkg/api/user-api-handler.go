@@ -7,6 +7,7 @@ import (
 
 	"github.com/0x41gawor/go-crud-api-sample/pkg/model"
 	"github.com/0x41gawor/go-crud-api-sample/pkg/repo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserApiHandler struct {
@@ -64,7 +65,7 @@ func (this *UserApiHandler) login(w http.ResponseWriter, r *http.Request) error 
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	if modelAttemp.Password != modelFromRepo.Password {
+	if bcrypt.CompareHashAndPassword([]byte(modelFromRepo.Password), []byte(modelAttemp.Password)) != nil {
 		return WriteJSON(w, http.StatusOK, "res: permission denied")
 	}
 
