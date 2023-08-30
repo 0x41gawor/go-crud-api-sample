@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/0x41gawor/go-crud-api-sample/pkg/repo"
 	"github.com/golang-jwt/jwt"
@@ -57,8 +58,10 @@ type apiFunc func(http.ResponseWriter, *http.Request) error
 
 func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := f(w, r); err != nil {
-			// handle error here
+		// just calling the func
+		err := f(w, r)
+		if err != nil {
+			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 		}
 	}
 }
@@ -70,19 +73,34 @@ func withJWTAuth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 		fmt.Println("calling JWT auth middleware")
 
 		tokenStr := r.Header.Get("x-jwt-token")
-		token, err := ValidateJWT(tokenStr)
 
+		token, err := ValidateJWT(tokenStr)
 		if err != nil {
 			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 			return
 		}
 
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			fmt.Println(claims["login"], claims["expiresAt"])
-		} else {
-			fmt.Println(err)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if ok != true {
+			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+			return
 		}
 
+		if token.Valid != true {
+			WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+			return
+		}
+		fmt.Println(claims["login"], claims["expiresAt"])
+
+		expiresAtFloat := claims["expiresAt"].(float64)
+		expiresAtTime := time.Unix(int64(expiresAtFloat), 0)
+
+		if time.Now().After(expiresAtTime) {
+			WriteJSON(w, http.StatusOK, "error: permission denied")
+			return
+		}
+
+		// at the end: call the given function
 		handlerFunc(w, r)
 	}
 }
