@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
 `id` int NOT NULL auto_increment,
 `login` varchar(45) NOT NULL unique,
-`password` varchar(45) NOT NULL,
+`password` varchar(60) NOT NULL,
 primary key (`id`)
 ) engine=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
