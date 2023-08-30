@@ -69,5 +69,11 @@ func (this *UserApiHandler) login(w http.ResponseWriter, r *http.Request) error 
 		return WriteJSON(w, http.StatusOK, "res: permission denied")
 	}
 
-	return WriteJSON(w, http.StatusOK, "res: login successful")
+	tokenStr, err := CreateJWT(modelFromRepo.Login)
+
+	if err != nil {
+		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
+	}
+
+	return WriteJSON(w, http.StatusOK, fmt.Sprintf("{res: login successful, Bearer: %s}", tokenStr))
 }
