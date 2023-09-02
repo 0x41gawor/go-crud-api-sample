@@ -10,10 +10,10 @@ import (
 )
 
 type ApiHandlerContinent struct {
-	repo repo.ContinentRepository
+	repo repo.RepositoryContinent
 }
 
-func NewContinentApiHandler(repo repo.ContinentRepository) *ApiHandlerContinent {
+func NewContinentApiHandler(repo repo.RepositoryContinent) *ApiHandlerContinent {
 	return &ApiHandlerContinent{
 		repo: repo,
 	}

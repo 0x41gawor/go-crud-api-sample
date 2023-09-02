@@ -10,17 +10,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserRepository struct {
+type RepositoryUser struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{
+func NewUserRepository(db *sql.DB) *RepositoryUser {
+	return &RepositoryUser{
 		db: db,
 	}
 }
 
-func (this *UserRepository) Create(m *model.User) (int64, error) {
+func (r *RepositoryUser) Create(m *model.User) (int64, error) {
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(m.Password), bcrypt.DefaultCost)
 
@@ -34,7 +34,7 @@ func (this *UserRepository) Create(m *model.User) (int64, error) {
 		string(encryptedPassword),
 	)
 
-	res, err := this.db.Exec(query)
+	res, err := r.db.Exec(query)
 
 	if err != nil {
 		return 0, err
@@ -49,13 +49,13 @@ func (this *UserRepository) Create(m *model.User) (int64, error) {
 	return lastId, nil
 }
 
-func (this *UserRepository) FindByLogin(login string) (*model.User, error) {
+func (r *RepositoryUser) FindByLogin(login string) (*model.User, error) {
 	query := fmt.Sprintf(
 		"SELECT * FROM users WHERE login = '%s'",
 		login,
 	)
 
-	res, err := this.db.Query(query)
+	res, err := r.db.Query(query)
 	defer res.Close()
 
 	if err != nil {

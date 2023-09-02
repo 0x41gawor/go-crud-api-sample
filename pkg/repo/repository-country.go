@@ -9,18 +9,18 @@ import (
 	"github.com/0x41gawor/go-crud-api-sample/pkg/model"
 )
 
-type CountryRepository struct {
+type RepositoryCountry struct {
 	db *sql.DB
 }
 
-func NewCountryRepository(db *sql.DB) *CountryRepository {
-	return &CountryRepository{
+func NewCountryRepository(db *sql.DB) *RepositoryCountry {
+	return &RepositoryCountry{
 		db: db,
 	}
 }
 
-func (this *CountryRepository) List() ([]*model.Country, error) {
-	res, err := this.db.Query("SELECT * FROM countries")
+func (r *RepositoryCountry) List() ([]*model.Country, error) {
+	res, err := r.db.Query("SELECT * FROM countries")
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (this *CountryRepository) List() ([]*model.Country, error) {
 	return models, nil
 }
 
-func (this *CountryRepository) Create(m *model.Country) (int64, error) {
+func (r *RepositoryCountry) Create(m *model.Country) (int64, error) {
 	top5citiesStr := strings.Join(m.Top5Cities, ",")
 
 	query := fmt.Sprintf(
@@ -64,7 +64,7 @@ func (this *CountryRepository) Create(m *model.Country) (int64, error) {
 		top5citiesStr,
 	)
 
-	res, err := this.db.Exec(query)
+	res, err := r.db.Exec(query)
 
 	if err != nil {
 		return 0, err
@@ -78,12 +78,12 @@ func (this *CountryRepository) Create(m *model.Country) (int64, error) {
 	return lastId, nil
 }
 
-func (this *CountryRepository) Read(id int64) (*model.Country, error) {
+func (r *RepositoryCountry) Read(id int64) (*model.Country, error) {
 	query := fmt.Sprintf(
 		"SELECT * FROM countries WHERE id =%d",
 		id,
 	)
-	res, err := this.db.Query(query)
+	res, err := r.db.Query(query)
 	defer res.Close()
 
 	if err != nil {
@@ -115,7 +115,7 @@ func (this *CountryRepository) Read(id int64) (*model.Country, error) {
 	return model, nil
 }
 
-func (this *CountryRepository) Update(id int64, m *model.Country) error {
+func (r *RepositoryCountry) Update(id int64, m *model.Country) error {
 	query := fmt.Sprintf(
 		`UPDATE countries
 		SET
@@ -136,7 +136,7 @@ func (this *CountryRepository) Update(id int64, m *model.Country) error {
 		id,
 	)
 
-	_, err := this.db.Exec(query)
+	_, err := r.db.Exec(query)
 
 	if err != nil {
 		return err
@@ -145,9 +145,9 @@ func (this *CountryRepository) Update(id int64, m *model.Country) error {
 	return nil
 }
 
-func (this *CountryRepository) Delete(id int64) (bool, error) {
+func (r *RepositoryCountry) Delete(id int64) (bool, error) {
 	query := fmt.Sprintf("DELETE FROM countries WHERE id = %d", id)
-	res, err := this.db.Exec(query)
+	res, err := r.db.Exec(query)
 	if err != nil {
 		return false, err
 	}

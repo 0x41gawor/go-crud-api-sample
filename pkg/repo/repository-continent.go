@@ -10,18 +10,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type ContinentRepository struct {
+type RepositoryContinent struct {
 	db *sql.DB
 }
 
-func NewContinentRepository(db *sql.DB) *ContinentRepository {
-	return &ContinentRepository{
+func NewContinentRepository(db *sql.DB) *RepositoryContinent {
+	return &RepositoryContinent{
 		db: db,
 	}
 }
 
-func (this *ContinentRepository) List() ([]*model.Continent, error) {
-	res, err := this.db.Query("SELECT * FROM continents")
+func (r *RepositoryContinent) List() ([]*model.Continent, error) {
+	res, err := r.db.Query("SELECT * FROM continents")
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (this *ContinentRepository) List() ([]*model.Continent, error) {
 	return models, nil
 }
 
-func (this *ContinentRepository) Create(m *model.Continent) (int64, error) {
+func (r *RepositoryContinent) Create(m *model.Continent) (int64, error) {
 	query := fmt.Sprintf(
 		"INSERT INTO continents(name, population, gdp, gdp_per_capita) VALUES ('%s', %f, %f, %f);",
 		m.Name,
@@ -55,7 +55,7 @@ func (this *ContinentRepository) Create(m *model.Continent) (int64, error) {
 		m.GdpPerCapita,
 	)
 
-	res, err := this.db.Exec(query)
+	res, err := r.db.Exec(query)
 
 	if err != nil {
 		return 0, err
@@ -69,12 +69,12 @@ func (this *ContinentRepository) Create(m *model.Continent) (int64, error) {
 	return lastId, nil
 }
 
-func (this *ContinentRepository) Read(id int64) (*model.Continent, error) {
+func (r *RepositoryContinent) Read(id int64) (*model.Continent, error) {
 	query := fmt.Sprintf(
 		"SELECT * FROM continents WHERE id =%d",
 		id,
 	)
-	res, err := this.db.Query(query)
+	res, err := r.db.Query(query)
 	defer res.Close()
 
 	if err != nil {
@@ -95,7 +95,7 @@ func (this *ContinentRepository) Read(id int64) (*model.Continent, error) {
 	return model, nil
 }
 
-func (this *ContinentRepository) Update(id int64, m *model.Continent) error {
+func (r *RepositoryContinent) Update(id int64, m *model.Continent) error {
 	query := fmt.Sprintf(
 		`UPDATE continents 
 		SET 
@@ -112,7 +112,7 @@ func (this *ContinentRepository) Update(id int64, m *model.Continent) error {
 		id,
 	)
 
-	_, err := this.db.Exec(query)
+	_, err := r.db.Exec(query)
 
 	if err != nil {
 		return err
@@ -121,9 +121,9 @@ func (this *ContinentRepository) Update(id int64, m *model.Continent) error {
 	return nil
 }
 
-func (this *ContinentRepository) Delete(id int64) (bool, error) {
+func (r *RepositoryContinent) Delete(id int64) (bool, error) {
 	query := fmt.Sprintf("DELETE FROM continents WHERE id = %d", id)
-	res, err := this.db.Exec(query)
+	res, err := r.db.Exec(query)
 	if err != nil {
 		return false, err
 	}

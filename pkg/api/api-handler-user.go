@@ -11,10 +11,10 @@ import (
 )
 
 type ApiHandlerUser struct {
-	repo repo.UserRepository
+	repo repo.RepositoryUser
 }
 
-func NewUserApiHandler(repo repo.UserRepository) *ApiHandlerUser {
+func NewUserApiHandler(repo repo.RepositoryUser) *ApiHandlerUser {
 	return &ApiHandlerUser{
 		repo: repo,
 	}
