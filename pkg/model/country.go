@@ -24,6 +24,6 @@ func NewCountry(name string, continentId int, population, gdp, gdpPerCapita floa
 	}
 }
 
-func (c *Country) String() string {
-	return fmt.Sprintf("Country{%d, %s, %d, %.2f,%.2f,%.2f,%s}", c.Id, c.Name, c.ContinentId, c.Population, c.Gdp, c.GdpPerCapita, c.Top5Cities)
+func (m *Country) String() string {
+	return fmt.Sprintf("Country{%d, %s, %d, %.2f,%.2f,%.2f,%s}", m.Id, m.Name, m.ContinentId, m.Population, m.Gdp, m.GdpPerCapita, m.Top5Cities)
 }
