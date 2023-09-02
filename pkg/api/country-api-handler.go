@@ -31,6 +31,7 @@ func (this *CountryApiHandler) handleCountry(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// handles "/country/{id}" endpoint
 func (this *CountryApiHandler) handleCountryId(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
