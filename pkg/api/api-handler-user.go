@@ -10,44 +10,44 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserApiHandler struct {
+type ApiHandlerUser struct {
 	repo repo.UserRepository
 }
 
-func NewUserApiHandler(repo repo.UserRepository) *UserApiHandler {
-	return &UserApiHandler{
+func NewUserApiHandler(repo repo.UserRepository) *ApiHandlerUser {
+	return &ApiHandlerUser{
 		repo: repo,
 	}
 }
 
 // handles "/register" endpoint
-func (this *UserApiHandler) handleRegister(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerUser) handleRegister(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "POST":
-		return this.create(w, r)
+		return h.create(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
 }
 
 // handles "/login" endpoint
-func (this *UserApiHandler) handleLogin(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerUser) handleLogin(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "POST":
-		return this.login(w, r)
+		return h.login(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
 }
 
-func (this *UserApiHandler) create(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerUser) create(w http.ResponseWriter, r *http.Request) error {
 	model := new(model.User)
 
 	err := json.NewDecoder(r.Body).Decode(model)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
-	_, err = this.repo.Create(model)
+	_, err = h.repo.Create(model)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
@@ -55,12 +55,12 @@ func (this *UserApiHandler) create(w http.ResponseWriter, r *http.Request) error
 	return WriteJSON(w, http.StatusOK, "res: registered sucessfully")
 }
 
-func (this *UserApiHandler) login(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerUser) login(w http.ResponseWriter, r *http.Request) error {
 	modelAttemp := new(model.User)
 
 	err := json.NewDecoder(r.Body).Decode(modelAttemp)
 
-	modelFromRepo, err := this.repo.FindByLogin(modelAttemp.Login)
+	modelFromRepo, err := h.repo.FindByLogin(modelAttemp.Login)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}

@@ -9,59 +9,58 @@ import (
 	"github.com/0x41gawor/go-crud-api-sample/pkg/repo"
 )
 
-type ContinentApiHandler struct {
-	repo repo.ContinentRepository
+type ApiHandlerCountry struct {
+	repo repo.CountryRepository
 }
 
-func NewContinentApiHandler(repo repo.ContinentRepository) *ContinentApiHandler {
-	return &ContinentApiHandler{
+func NewCountryApiHandler(repo repo.CountryRepository) *ApiHandlerCountry {
+	return &ApiHandlerCountry{
 		repo: repo,
 	}
 }
 
-// handles "/continent" endpoint
-func (this *ContinentApiHandler) handleContinent(w http.ResponseWriter, r *http.Request) error {
+// handles "/country" endpoint
+func (h *ApiHandlerCountry) handleCountry(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		return this.list(w, r)
+		return h.list(w, r)
 	case "POST":
-		return this.create(w, r)
+		return h.create(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
 }
 
-// handles "/continent/{id}" endpoint
-func (this *ContinentApiHandler) handleContinentId(w http.ResponseWriter, r *http.Request) error {
+// handles "/country/{id}" endpoint
+func (h *ApiHandlerCountry) handleCountryId(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		return this.read(w, r)
-	case "PUT":
-		return this.update(w, r)
+		return h.read(w, r)
+	case "POST":
+		return h.update(w, r)
 	case "DELETE":
-		return this.delete(w, r)
+		return h.delete(w, r)
 	default:
 		return WriteJSON(w, http.StatusOK, "error: method not allowed")
 	}
 }
 
-func (this *ContinentApiHandler) list(w http.ResponseWriter, r *http.Request) error {
-	res, err := this.repo.List()
+func (h *ApiHandlerCountry) list(w http.ResponseWriter, r *http.Request) error {
+	res, err := h.repo.List()
 	if err != nil {
 		return err
 	}
 	return WriteJSON(w, http.StatusOK, res)
 }
 
-func (this *ContinentApiHandler) create(w http.ResponseWriter, r *http.Request) error {
-	model := new(model.Continent)
+func (h *ApiHandlerCountry) create(w http.ResponseWriter, r *http.Request) error {
+	model := new(model.Country)
 
 	err := json.NewDecoder(r.Body).Decode(model)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
-
-	id, err := this.repo.Create(model)
+	id, err := h.repo.Create(model)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
@@ -69,13 +68,13 @@ func (this *ContinentApiHandler) create(w http.ResponseWriter, r *http.Request) 
 	return WriteJSON(w, http.StatusOK, fmt.Sprintf("createdId: %d", id))
 }
 
-func (this *ContinentApiHandler) read(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerCountry) read(w http.ResponseWriter, r *http.Request) error {
 	id, err := getID(r)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	model, err := this.repo.Read(int64(id))
+	model, err := h.repo.Read(int64(id))
 
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
@@ -84,8 +83,8 @@ func (this *ContinentApiHandler) read(w http.ResponseWriter, r *http.Request) er
 	return WriteJSON(w, http.StatusOK, model)
 }
 
-func (this *ContinentApiHandler) update(w http.ResponseWriter, r *http.Request) error {
-	model := new(model.Continent)
+func (h *ApiHandlerCountry) update(w http.ResponseWriter, r *http.Request) error {
+	model := new(model.Country)
 
 	err := json.NewDecoder(r.Body).Decode(model)
 	if err != nil {
@@ -96,12 +95,12 @@ func (this *ContinentApiHandler) update(w http.ResponseWriter, r *http.Request) 
 
 	model.Id = id
 
-	err = this.repo.Update(int64(id), model)
+	err = h.repo.Update(int64(id), model)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	updatedModel, err := this.repo.Read(int64(id))
+	updatedModel, err := h.repo.Read(int64(id))
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
@@ -109,13 +108,13 @@ func (this *ContinentApiHandler) update(w http.ResponseWriter, r *http.Request) 
 	return WriteJSON(w, http.StatusOK, updatedModel)
 }
 
-func (this *ContinentApiHandler) delete(w http.ResponseWriter, r *http.Request) error {
+func (h *ApiHandlerCountry) delete(w http.ResponseWriter, r *http.Request) error {
 	id, err := getID(r)
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	res, err := this.repo.Delete(int64(id))
+	res, err := h.repo.Delete(int64(id))
 	if err != nil {
 		return WriteJSON(w, http.StatusOK, fmt.Sprintf("error: %s", err.Error()))
 	}
