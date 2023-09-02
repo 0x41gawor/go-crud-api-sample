@@ -37,6 +37,10 @@ func (this *Server) Run() {
 	userRepository := repo.NewUserRepository(dbConnectionHelper.DB)
 	userApiHandler := NewUserApiHandler(*userRepository)
 
+	imageApiHandler := NewApiHandlerImage()
+
+	router.HandleFunc("/image", makeHTTPHandleFunc(imageApiHandler.handleImage))
+
 	router.HandleFunc("/register", makeHTTPHandleFunc(userApiHandler.handleRegister))
 	router.HandleFunc("/register/", makeHTTPHandleFunc(userApiHandler.handleRegister))
 	router.HandleFunc("/login", makeHTTPHandleFunc(userApiHandler.handleLogin))
